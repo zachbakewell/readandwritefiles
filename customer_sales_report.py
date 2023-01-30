@@ -5,28 +5,31 @@ import csv
 sales = open ('sales.csv', 'r', newline='')
 sales_report = open('salesreport.csv', 'w', newline='')
 
-reader = csv.reader(sales, delimeter=',')
-writer = csv.writer(sales_report, delimeter=',')
+reader = csv.reader(sales, delimiter=',')
+writer = csv.writer(sales_report, delimiter=',')
 
-fieldnames = ['ID', 'Total']
+header = ['customer |', 'Total']
+writer.writerow(header)
 next(reader)
-writer.writerow(fieldnames)
 
-sales = [[]*2]
-IDs = []
 
-for row in reader:
-    ID = row[0]
-    Sales = row[3]
-    IDSales = [ID, Sales]
-    sales.extend(IDSales)
-    IDs.extend(ID)
+total = 0
+ids = ''
 
-#remove duplicates from IDs
-report = [[]*2]
+for x in reader:
+    row = [format(ids, '>9'), format(total, '.2f')]
+    if x[0] != ids:
+        if ids:
+            writer.writerow(row)
+        total = 0
+        ids = x[0]
+    subtotal = float(x[3])
+    tax = float(x[4])
+    freight = float(x[5])
+    tot = subtotal + tax + freight
+    total += tot
+row = [format(ids, '>9'), format(total, '.2f')]
+writer.writerow(row)
 
-for i in IDs: 
-    if i not in report: 
-        report.append(i)
-
-#for loop through both lists, if id matches add it to the number
+sales.close()
+sales_report.close()
